@@ -53,12 +53,12 @@ steps:
       when: on_fail
       name: Slack - Detecting Job Status (FAIL)
       command: |
-        echo 'export CCI_STATUS="fail"' > /tmp/SLACK_JOB_STATUS
+        python -c "import os, platform, tempfile; open(os.path.join('/tmp' if platform.system() == 'Darwin' else tempfile.gettempdir(), 'SLACK_JOB_STATUS'), 'w').write('export CCI_STATUS=\"fail\"')"
   - run:
       when: on_success
       name: Slack - Detecting Job Status (PASS)
       command: |
-        echo 'export CCI_STATUS="pass"' > /tmp/SLACK_JOB_STATUS
+        python -c "import os, platform, tempfile; open(os.path.join('/tmp' if platform.system() == 'Darwin' else tempfile.gettempdir(), 'SLACK_JOB_STATUS'), 'w').write('export CCI_STATUS=\"pass\"')"
   - run:
       when: always
       name: Slack - Sending Notification
@@ -76,4 +76,4 @@ steps:
         success_tagged_deploy_1: "<<include(message_templates/success_tagged_deploy_1.json)>>"
         basic_on_hold_1: "<<include(message_templates/basic_on_hold_1.json)>>"
         basic_success_1: "<<include(message_templates/basic_success_1.json)>>"
-      command: python <<include(scripts/notify.py)>>
+      command: <<include(scripts/notify_inline.sh)>>
